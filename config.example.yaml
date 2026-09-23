@@ -2,7 +2,7 @@
 # cp config.example.yaml config.yaml
 
 # 监听地址。端口需与 docker-compose.yml 的端口映射一致
-listen: "0.0.0.0:8080"
+listen: "0.0.0.0:38117"
 
 # 数据目录。docker-compose 将宿主 ./data 挂载到 /data
 data_dir: "/data"
