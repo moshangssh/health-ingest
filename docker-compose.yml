@@ -5,7 +5,7 @@ services:
     ports:
       # 只绑本机 loopback，供宿主机上的反向代理访问，不对公网暴露。
       # 若反向代理本身跑在 Docker 里，改用容器网络互通，删掉这段 ports。
-      - "127.0.0.1:38117:38117"
+      - "127.0.0.1:18117:18117"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
       - ./data:/data

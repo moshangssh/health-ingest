@@ -37,7 +37,7 @@ Caddy：
 
 ```
 health.example.com {
-    reverse_proxy 127.0.0.1:38117
+    reverse_proxy 127.0.0.1:18117
 }
 ```
 
@@ -49,7 +49,7 @@ server {
     server_name health.example.com;
 
     location / {
-        proxy_pass http://127.0.0.1:38117;
+        proxy_pass http://127.0.0.1:18117;
     }
 }
 ```
