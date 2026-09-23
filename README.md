@@ -23,7 +23,7 @@
 cp config.example.yaml config.yaml
 ```
 
-改 `ingest_key` 为随机串，确认 `listen` 端口与 `docker-compose.yml` 的端口映射一致。
+改 `ingest_key` 为随机串，并把 `docker-compose.yml` 末尾 `networks.proxy.name` 改成反向代理所在的网络名。
 
 ### 2. 启动
 
@@ -33,15 +33,27 @@ docker compose up -d --build
 
 ### 3. 反向代理
 
-Caddy：
+本服务不发布宿主端口，而是与反向代理共用同一个 Docker 网络，由反代按容器名
+`health-ingest:18117` 访问。
+
+先查出反向代理所在的网络名：
+
+```bash
+docker inspect <反代容器名> --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{"\n"}}{{end}}'
+```
+
+填入 `docker-compose.yml` 末尾的 `networks.proxy.name`。若反代不在该网络，需在反代的
+compose 里同样声明这个 external network。
+
+Caddy（容器）：
 
 ```
 health.example.com {
-    reverse_proxy 127.0.0.1:18117
+    reverse_proxy health-ingest:18117
 }
 ```
 
-Nginx：
+Nginx（容器）：
 
 ```
 server {
@@ -49,7 +61,7 @@ server {
     server_name health.example.com;
 
     location / {
-        proxy_pass http://127.0.0.1:18117;
+        proxy_pass http://health-ingest:18117;
     }
 }
 ```
