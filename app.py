@@ -13,7 +13,6 @@ ROOT = Path(__file__).parent
 CONFIG = yaml.safe_load((ROOT / "config.yaml").read_text("utf-8"))
 DB_PATH = Path(CONFIG["data_dir"]) / "health.db"
 
-ENVELOPE_KEYS = {"timestamp", "app_version"}
 TIME_FIELDS = ("time", "start_time", "session_end_time")
 
 SCHEMA = """
@@ -47,7 +46,9 @@ def store(body):
     conn = connect()
     stored = 0
     for type_, records in body.items():
-        if type_ in ENVELOPE_KEYS:
+        # payload 契约：标量字段是 envelope（timestamp / app_version / test），
+        # 数组字段才是健康数据。按类型判断，避免逐个维护 envelope 名单。
+        if not isinstance(records, list):
             continue
         for record in records:
             cur = conn.execute(
