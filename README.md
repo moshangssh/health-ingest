@@ -71,8 +71,8 @@ server {
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | `POST` | `/ingest` | 接收 HC Webhook 推送。需请求头 `x-api-key`，值等于配置里的 `ingest_key` |
-| `GET` | `/export?days=N` | 导出最近 N 天的记录，按数据类型分组 |
-| `GET` | `/ping` | 健康检查 |
+| `GET` | `/export?days=N` | 导出最近 N 天的记录，按数据类型分组。需请求头 `x-api-key` |
+| `GET` | `/ping` | 健康检查。无需认证 |
 
 ## 手机端配置（HC Webhook）
 

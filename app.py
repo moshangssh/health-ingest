@@ -91,11 +91,14 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def authorized(self):
+        return self.headers.get("x-api-key") == CONFIG["ingest_key"]
+
     def do_POST(self):
         if urlparse(self.path).path != "/ingest":
             self.send_error(404)
             return
-        if self.headers.get("x-api-key") != CONFIG["ingest_key"]:
+        if not self.authorized():
             self.send_error(401)
             return
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
@@ -103,10 +106,14 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/ping":
+            self.reply(200, {"ok": True})
+            return
+        if not self.authorized():
+            self.send_error(401)
+            return
         if parsed.path == "/export":
             self.reply(200, export(int(parse_qs(parsed.query)["days"][0])))
-        elif parsed.path == "/ping":
-            self.reply(200, {"ok": True})
         else:
             self.send_error(404)
 
